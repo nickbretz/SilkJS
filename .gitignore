@@ -7,4 +7,14 @@ nbproject
 silkjs
 src/silkjs
 src/v8-read-only/
+bootstrap-silkjs
+src/bootstrap-silkjs
+src/curl-7.21.6/
+src/jpeg-8b/
+src/libgd2_2.0.36~rc1~dfsg.orig/
+src/libmemcached-0.44/
+src/libssh2-1.2.8/
+src/mm-1.4.2/
+src/mysql-5.1.58/
+src/osx_dependencies/
 
