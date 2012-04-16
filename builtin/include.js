@@ -64,7 +64,6 @@
 	include.path = [
 		'./',
 		'./coffeescript',
-		'/usr/share/silkjs',
-		'/usr/share/silkjs/coffeescript'
+		'/usr/local/silkjs'
 	];
 }());

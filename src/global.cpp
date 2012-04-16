@@ -112,7 +112,7 @@ static Handle<Value> Include(const Arguments& args) {
         if (!js_file) {
             strcpy(buf, *str);
             if (buf[0] != '/') {
-                strcpy(buf, "/usr/share/silkjs/");
+                strcpy(buf, "/usr/local/silkjs/");
                 strcat(buf, *str);
                 js_file = readFile(buf);
             }
@@ -137,6 +137,7 @@ extern void init_net_object();
 extern void init_fs_object();
 extern void init_http_object();
 extern void init_popen_object();
+extern void init_editline_object();
 #if !BOOTSTRAP_SILKJS
 extern void init_sem_object();
 extern void init_mysql_object();
@@ -150,7 +151,6 @@ extern void init_xhrHelper_object();
 extern void init_ssh_object();
 extern void init_sftp_object();
 extern void init_ftp_object();
-extern void init_editline_object();
 #endif
 
 void init_global_object() {
@@ -166,6 +166,7 @@ void init_global_object() {
     init_fs_object();
     init_v8_object();
     init_popen_object();
+    init_editline_object();
 
 #if !BOOTSTRAP_SILKJS
     init_logfile_object();
@@ -180,7 +181,6 @@ void init_global_object() {
     init_ssh_object();
     init_sftp_object();
     init_ftp_object();
-    init_editline_object();
 #endif
     globalObject->Set(String::New("builtin"), builtinObject);
     globalObject->Set(String::New("log"), FunctionTemplate::New(Log));

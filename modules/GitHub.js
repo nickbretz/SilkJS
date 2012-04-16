@@ -33,16 +33,16 @@ function GitHub(username, password) {
     this.username = username;
     this.password = password;
     this.url = 'https://' + username + ':' + password + '@api.github.com';
-    var response = cURL({
-        url: this.url + '/users/'+username
-    });
-    var result = Json.decode(response.responseText);
-
-    if (response.status !== 200) {
-        throw result.message;
-    }
-    this.status = response.status;
-    this.user = result;
+//    var response = cURL({
+//        url: this.url + '/users/'+username
+//    });
+//    var result = Json.decode(response.responseText);
+//
+//    if (response.status !== 200) {
+//        throw result.message;
+//    }
+//    this.status = response.status;
+//    this.user = result;
 }
 
 GitHub.prototype.extend({
@@ -452,7 +452,7 @@ GitHub.prototype.extend({
     },
 
     /**
-     * @funciton GitHub.createRepository
+     * @function GitHub.createRepository
      *
      * ### Synopsis
      *
@@ -840,7 +840,7 @@ GitHub.prototype.extend({
     },
 
     /**
-     * @funciton GitHub.listCommits
+     * @function GitHub.listCommits
      *
      * ### Synopsis
      *
@@ -889,6 +889,19 @@ GitHub.prototype.extend({
         return Json.decode(response.responseText);
     },
 
+    /**
+     * @function GitHub.listComments
+     *
+     * var comments = gh.listComments(repo);
+     * var comments = gh.listComments(repo, sha);
+     *
+     * List commit comments for a repository or for a single commit.
+     *
+     * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
+     * @param {string} sha - SHA of a specific commit to list comments for.
+     * @return {array} comments - array of objects describing the comments.
+     *
+     */
     listComments: function(repo, sha) {
         var url = this.url + '/repos/' + this.repoName(repo);
         if (sha) {
@@ -897,6 +910,36 @@ GitHub.prototype.extend({
         url += '/comments';
         var response = cURL({
             url: url
+        });
+        this.status = response.status;
+        return Json.decode(response.responseText);
+    },
+
+    /**
+     * @function GitHub.createCommitComment
+     *
+     * var comment = gh.createCommitComment(repo, commentDetails);
+     *
+     * Create a commit comment.
+     *
+     * The commentDetails object has the following members (all fields are required):
+     *
+     * + {string} body - text of the comment.
+     * + {string} commit_id - SHA of the commit to comment on.
+     * + {number} line - line number in the file to comment on.
+     * + {string} path - relative path in the repo to the file to comment on.
+     * + {number} position - line index in the diff to comment on.
+     *
+     * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
+     * @param {object} commentDetails - object describing comment to create (see above).
+     * @return {object} comment - object describing the comment that was created.
+     */
+    createCommitComment: function(repo, o) {
+        var url = this.url + '/repos/' + this.repoName(repo) + '/' + o.commit_id + '/comments';
+        var response = cURL({
+            method: 'POST',
+            url: url,
+            params: Json.encode(o)
         });
         this.status = response.status;
         return Json.decode(response.responseText);

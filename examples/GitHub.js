@@ -405,6 +405,7 @@ function main(username, password) {
     }
     
     gh = new GitHub(username, password);
+    gh.getUser();
     stdin = new ReadLine('GitHub', 50);
     defaultPrompt();
     var line;

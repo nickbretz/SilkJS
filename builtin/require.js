@@ -124,6 +124,6 @@
 	require.path = [
 		'./',
 		'modules',
-		'/usr/share/silkjs/modules'
+		'/usr/local/silkjs/modules'
 	];
 }());
