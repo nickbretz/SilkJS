@@ -5,16 +5,16 @@ build/
 /nbproject/private/
 nbproject
 silkjs
-src/silkjs
-src/v8-read-only/
+silkjs
+v8-read-only/
+strap-silkjs
 bootstrap-silkjs
-src/bootstrap-silkjs
-src/curl-7.21.6/
-src/jpeg-8b/
-src/libgd2_2.0.36~rc1~dfsg.orig/
-src/libmemcached-0.44/
-src/libssh2-1.2.8/
-src/mm-1.4.2/
-src/mysql-5.1.58/
-src/osx_dependencies/
+curl-7.21.6/
+jpeg-8b/
+libgd2_2.0.36~rc1~dfsg.orig/
+libmemcached-0.44/
+libssh2-1.2.8/
+mm-1.4.2/
+mysql-5.1.58/
+osx_dependencies/
 
