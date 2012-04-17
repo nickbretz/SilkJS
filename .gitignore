@@ -1,5 +1,6 @@
 *.o
 .idea
+*DS_Store
 CMakeLists.txt.user
 build/
 /nbproject/private/
