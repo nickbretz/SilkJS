@@ -1,4 +1,4 @@
-#!/usr/local/bin/silkjs
+#!/usr/local/silkjs/bin/silkjs
 // httpd/main.js
 
 print_r = require('builtin/print_r');
