@@ -32,7 +32,7 @@ install:
 	cp httpd/main.js /usr/local/silkjs/bin/httpd-silk.js
 	chmod 775 /usr/local/silkjs/bin/*.js
 	chgrp -R admin /usr/local/silkjs
-	ln -sf /usr/local/silkjs/bin/siljs /usr/local/bin/silkjs
+	ln -sf /usr/local/silkjs/bin/silkjs /usr/local/bin/silkjs
 	ln -sf /usr/local/silkjs/bin/httpd-silk.js /usr/local/bin/httpd-silk.js
 	ln -sf /usr/local/silkjs/bin/systat.js /usr/local/bin/systat.js
 
