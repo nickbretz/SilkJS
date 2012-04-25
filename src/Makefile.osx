@@ -1,6 +1,6 @@
 CORE=	main.o base64.o global.o console.o process.o net.o fs.o buffer.o v8.o http.o md5.o popen.o linenoise.o editline.o
 
-OBJ=	mysql.o memcached.o gd.o ncurses.o sem.o logfile.o sqlite3.o xhrhelper.o curl.o ssh2.o sftp.o ftp.o ftplib.o 
+OBJ=	mysql.o memcached.o gd.o ncurses.o sem.o logfile.o sqlite3.o xhrhelper.o curl.o ssh2.o sftp.o ftp.o ftplib.o cairo.o
 
 #OBJ=	main.o base64.o global.o console.o process.o net.o fs.o buffer.o mysql.o http.o gd.o ncurses.o sem.o logfile.o v8.o md5.o sqlite3.o xhrhelper.o curl.o ssh2.o sftp.o memcached.o ftplib.o ftp.o editline.o popen.o linenoise.o
 
@@ -32,10 +32,10 @@ LIBDIR = $(INSTALLDIR)/lib
 DEPENDENCIES = $(MYSQL) $(JPEG) $(GD2) $(MM) $(CURL) $(SSH2) $(MEMCACHED)
 
 %.o: %.cpp SilkJS.h Makefile
-	g++ $(CFLAGS) -c -I$(INSTALLDIR)/include -I$(INSTALLDIR)/include/mysql -Iv8-read-only/include -g -o $*.o $*.cpp
+	g++ $(CFLAGS) -c -I/usr/X11/include -I$(INSTALLDIR)/include -I$(INSTALLDIR)/include/mysql -Iv8-read-only/include -g -o $*.o $*.cpp
 
 SilkJS:	$(V8) $(V8_LIB) $(DEPENDENCIES) $(CORE) $(OBJ) SilkJS.h Makefile
-	g++ $(CFLAGS) -o silkjs $(CORE) $(OBJ) -Lv8-read-only -lv8 -L$(LIBDIR)/mysql -lmysqlclient -L$(LIBDIR) -lmm -ljpeg -lgd -lncurses -lssl -lpthread -lsqlite3 -lcurl -lssh2 -lmemcached -ledit
+	g++ $(CFLAGS) -o silkjs $(CORE) $(OBJ) -Lv8-read-only -lv8 -L$(LIBDIR)/mysql -lmysqlclient -L$(LIBDIR) -lmm -ljpeg -lgd -lncurses -lssl -lpthread -lsqlite3 -lcurl -lssh2 -lmemcached
 
 bootstrap:  CFLAGS += -DBOOTSTRAP_SILKJS
 

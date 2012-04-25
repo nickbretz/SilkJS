@@ -1,5 +1,12 @@
-/** @ignore */
-
+/**
+ * @class GitHub
+ *
+ * ### Synopsis
+ *
+ * Interface to GitHub.
+ *
+ * This class uses the GitHub v3 API, documented here: http://developer.github.com/v3/.
+ */
 var cURL = require('cURL'),
     Json = require('Json'),
     console = require('console');
@@ -359,7 +366,7 @@ GitHub.prototype.extend({
     },
 
     /**
-     * @function gh.updateKey
+     * @function GitHub.updateKey
      * 
      * ### Synopsis
      * 
@@ -383,7 +390,7 @@ GitHub.prototype.extend({
     },
 
     /**
-     * @function gh.deleteKey
+     * @function GitHub.deleteKey
      * 
      * ### Synopsis
      * 
@@ -499,18 +506,18 @@ GitHub.prototype.extend({
      * @param {string} repo - name of repository to get information about (e.g. mschwartz/SilkJS or SilkJS)
      *
      */
-    getRepository: function(name) {
-        var parts = name.split('/');
+    getRepository: function(repo) {
+        var parts = repo.split('/');
         var user;
         if (parts.length > 1) {
-            name = parts[1];
+            repo = parts[1];
             user = parts[0];
         }
         else {
             user = this.username;
         }
         var response = cURL({
-            url: this.url + '/repos/' + user + '/' + name
+            url: this.url + '/repos/' + user + '/' + repo
         });
         this.status = response.status;
         return Json.decode(response.responseText);
@@ -809,7 +816,7 @@ GitHub.prototype.extend({
             return true;
         }
         if (response.responseText.length) {
-            throw Json.decode(response.responseText).message;
+            throw Json.decode(response.responseText);
         }
     },
 
@@ -835,7 +842,7 @@ GitHub.prototype.extend({
             return true;
         }
         if (response.responseText.length) {
-            throw Json.decode(response.responseText).message;
+            throw Json.decode(response.responseText);
         }
     },
 
@@ -892,15 +899,16 @@ GitHub.prototype.extend({
     /**
      * @function GitHub.listComments
      *
-     * var comments = gh.listComments(repo);
-     * var comments = gh.listComments(repo, sha);
+     * ### Synopsis
      *
-     * List commit comments for a repository or for a single commit.
+     * var comments = gh.listComments(repo);        // get comments for repository
+     * var comments = gh.listComments(repo, sha);   // get comments for a single commit
+     *
+     * List comments for a repository or a single commit
      *
      * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
-     * @param {string} sha - SHA of a specific commit to list comments for.
-     * @return {array} comments - array of objects describing the comments.
-     *
+     * @param {string} sha - sha string that identifies the commit
+     * @return {Object} comments - array of comments
      */
     listComments: function(repo, sha) {
         var url = this.url + '/repos/' + this.repoName(repo);
@@ -918,33 +926,269 @@ GitHub.prototype.extend({
     /**
      * @function GitHub.createCommitComment
      *
-     * var comment = gh.createCommitComment(repo, commentDetails);
+     * ### Synopsis
      *
-     * Create a commit comment.
+     * var comment = gh.createCommitComment(repo, sha, config);
      *
-     * The commentDetails object has the following members (all fields are required):
+     * Create a commit comment
      *
-     * + {string} body - text of the comment.
-     * + {string} commit_id - SHA of the commit to comment on.
-     * + {number} line - line number in the file to comment on.
-     * + {string} path - relative path in the repo to the file to comment on.
-     * + {number} position - line index in the diff to comment on.
+     * The config parameter is an object with the following members:
+     *
+     * + {string} body - required, body of the comment
+     * + {string} commit_id - required, SHA of the commit to comment on
+     * + {number} line - required, line number in the file to comment on
+     * + {string} path - required, relative path of file to comment on
+     * + {number} position - required - line index in the diff to comment on
      *
      * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
-     * @param {object} commentDetails - object describing comment to create (see above).
-     * @return {object} comment - object describing the comment that was created.
+     * @param {string} sha - sha string that identifies the commit
+     * @param {object} config - see description above.
+     * @return {object} comment - resulting comment information
      */
-    createCommitComment: function(repo, o) {
-        var url = this.url + '/repos/' + this.repoName(repo) + '/' + o.commit_id + '/comments';
+    createCommitComment: function(repo, sha, comment) {
+        var url = this.url + '/repos/' + this.repoName(repo) + '/commits/' + sha + '/comments';
         var response = cURL({
             method: 'POST',
             url: url,
-            params: Json.encode(o)
+            params: Json.encode(comment)
         });
         this.status = response.status;
         return Json.decode(response.responseText);
-    }
+    },
 
+    /**
+     * @function GitHub.getCommitComment
+     *
+     * ### Synopsis
+     *
+     * var comment = gh.getCommitComment(repo, id);
+     *
+     * Get a single commit comment
+     * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
+     * @param {string} id - sha string that identifies the commit comment
+     * @return {object} comment - resulting comment information
+     */
+    getCommitComment: function(repo, id) {
+        var url = this.url + '/repos/' + this.repoName(repo) + '/comments/' + id;
+        var response = cURL({
+            url: url
+        });
+        this.status = response.status;
+        return Json.decode(response.responseText);
+    },
+
+    /**
+     * @function GitHub.updateCommitComment
+     *
+     * ### Synopsis
+     *
+     * var comment = gh.updateCommitComment(repo, id, body);
+     *
+     * Get a single commit comment
+     * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
+     * @param {string} id - sha string that identifies the commit comment
+     * @param {string} body - new text for the comment
+     * @return {object} comment - resulting comment information
+     */
+    updateCommitComment: function(repo, id, body) {
+        var url = this.url + '/repos/' + this.repoName(repo) + '/comments/' + id;
+        var response = cURL({
+            method: 'PATCH',
+            url: url,
+            params: Json.encode({ body: body })
+        });
+        this.status = response.status;
+        return Json.decode(response.responseText);
+    },
+
+    /**
+     * @function GitHub.compareCommits
+     *
+     * ### Synopsis
+     *
+     * var info = gh.compareCommits(repo, base, head);
+     *
+     * Compare two commits
+     *
+     * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
+     * @param {string} base - SHA of base commit
+     * @param {string} head - SHA of head commit
+     * @return {object} info - comparison information about the two commits
+     */
+    compareCommits: function(repo, base, head) {
+        var url = this.url + '/repos/' + this.repoName(repo) + '/compare/' + base + '...' + head;
+        var response = cURL({
+            url: url
+        });
+        this.status = response.status;
+        return Json.decode(response.responseText);
+    },
+
+    /**
+     * @function GitHub.deleteCommitComment
+     *
+     * ### Synopsis
+     *
+     * var success = gh.deleteCommitComment(repo, id);
+     *
+     * Delete a commit comment.
+     *
+     * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
+     * @param {string} id - sha string that identifies the commit comment
+     * @return {boolean} success - true if comment deleted
+     *
+     * ### Notes
+     * If an error occurs, an exception is thrown.
+     */
+    deleteCommitComment: function(repo, id) {
+        var url = this.url + '/repos/' + this.repoName(repo) + '/comments/' + id;
+        var response = cURL({
+            method: 'DELETE',
+            url: url
+        });
+        this.status = response.status;
+        if (this.status != 204) {
+            throw Json.decode(response.responseText);
+        }
+    },
+
+    // downloads api
+
+    /**
+     * @function GitHub.listDownloads
+     *
+     * ### Synopsis
+     *
+     * var downloads = gh.listDownloads(repo);
+     *
+     * List downloads for a repository
+     *
+     * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
+     * @return {array} downloads - array of objects describing each download item
+     */
+    listDownloads: function(repo) {
+        var url = this.url + '/repos/' + this.repoName(repo) + '/downloads';
+        var response = cURL({
+            url: url
+        });
+        this.status = response.status;
+        return Json.decode(response.responseText);
+    },
+
+    /**
+     * @function GitHub.getDownload
+     *
+     * ### Synopsis
+     *
+     * var download = gh.getDownload(repo, id);
+     *
+     * Get a single download
+     *
+     * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
+     * @param {string} id - id of the download to get
+     * @return {object} downloads - object describing each download item
+     */
+    getDownload: function(repo, id) {
+        var url = this.url + '/repos/' + this.repoName(repo) + '/downloads/' + id;
+        var response = cURL({
+            url: url
+        });
+        this.status = response.status;
+        return Json.decode(response.responseText);
+    },
+    
+    /**
+     * @function GitHub.createDownload
+     * 
+     * ### Synopsis
+     * 
+     * var success = gh.createDownload(repo, path);
+     * var success = gh.createDownload(repo, path, description);
+     * var success = gh.createDownload(repo, path, description, contentType);
+     * 
+     * Create a download for a repo.
+     * 
+     * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
+     * @param {string} path - path to file to upload (e.g. the download file to create).
+     * @param {string} description - description of the download.
+     * @param {string} contentType - content-type of file (MIME type)
+     * @return {boolean} success - true if download was created
+     */
+    createDownload: function(repo, path, description, contentType) {
+        var url = this.url + '/repos/' + this.repoName(repo) + '/downloads';
+        // create the resource
+        if (!fs.exists(path)) {
+            throw 'File ' + path + ' does not exist';
+        }
+        var params = {
+            name:  path.split('/').pop(),
+            size: fs.fileSize(path)
+        };
+        if (description) {
+            params.description = description;
+        }
+        if (contentType) {
+            params.content_type = contentType;
+        }
+        console.log('Creating GitHub resource...')
+        var response = cURL({
+            method: 'POST',
+            url: url,
+            params: Json.encode(params)
+        });
+        var o = Json.decode(response.responseText);
+        if (response.status != 201) {
+            throw o;
+        }
+        // upload to S3
+        console.log('Uploading to S3...');
+        var config = {
+            method: 'POST',
+            url: o.s3_url,
+            form: [
+                { name: 'key', value: o.path },
+                { name: 'acl', value: o.acl },
+                { name: 'success_action_status', value: 201 },
+                { name: 'Filename', value: o.name },
+                { name: 'AWSAccessKeyId', value: o.accesskeyid },
+                { name: 'Policy', value: o.policy },
+                { name: 'Signature', value: o.signature },
+                { name: 'Content-Type', value: o.mime_type },
+                { name: 'file', value: path, fileUpload: true }
+            ]
+        };
+        response = cURL(config);
+        this.status = response.status;
+        return response.status == 201;
+    },
+    
+    /**
+     * @function GitHub.deleteDownload
+     * 
+     * ### Synopsis
+     * 
+     * var success = gh.deleteDownload(repo, id);
+     * 
+     * Delete a download.
+     * 
+     * The id parameter can be determined by looking at the id emmber of the object for the download returned by GitHub.listDownloads().
+     * 
+     * @param {string} repo - name of repo, e.g. mschwartz/SilkJS or SilkJS if the authenticated user is mschwartz.
+     * @param {string} id - id of download to delete.
+     * @return {boolean} success - true if the download was deleted.
+     */
+    deleteDownload: function(repo, id) {
+        var url = this.url + '/repos/' + this.repoName(repo) + '/downloads/' + id;
+        var response = cURL({
+            method: 'DELETE',
+            url: url
+        });
+        this.status = response.status;
+        if (this.status != 204) {
+            throw Json.decode(response.responseText);
+        }
+        return this.status == 204;
+    }
 });
 
 exports.GitHub = GitHub;
